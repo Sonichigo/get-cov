@@ -1,0 +1,63 @@
+name: Go Code Coverage
+
+description: |
+  This action runs code coverage for Go based projects and uploads the coverage report as an artifact.
+
+inputs:
+  package:
+    description: 'Package path to run code coverage for.'
+    required: true
+    default: './...'
+  coverage_threshold:
+    description: 'Minimum coverage percentage required.'
+    required: false
+    default: '80'
+
+outputs:
+  coverage_html:
+    description: 'Path to the generated HTML coverage report.'
+  coverage_text:
+    description: 'Text summary of coverage.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 'latest'
+
+    - name: Run tests with coverage
+      run: |
+        go test -coverprofile=coverage.out ${{ inputs.package }}
+
+    - name: Convert coverage.out to HTML
+      run: |
+        go tool cover -html=coverage.out -o coverage.html
+
+    - name: Display coverage summary
+      run: |
+        coverage_summary=$(go tool cover -func=coverage.out)
+        echo "$coverage_summary"
+        echo "::set-output name=coverage_text::$coverage_summary"
+
+    - name: Set outputs
+      id: coverage_outputs
+      run: |
+        echo "::set-output name=coverage_html::coverage.html"
+
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-${{ github.sha }}
+        path: coverage.html
+    - name: Display coverage summary
+      run: |
+        coverage_summary=$(go tool cover -func=coverage.out)
+        echo "Coverage Summary:"
+        echo "$coverage_summary" | awk 'BEGIN { print "Lines\tStatements\tBranches\tFunctions" } { print $1 "\t" $2 "\t" $3 "\t" $4 }'
+        echo "::set-output name=coverage_text::$coverage_summary"
+      
