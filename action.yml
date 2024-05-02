@@ -39,7 +39,6 @@ runs:
     - name: Run tests with coverage
       run: |
         go test -coverprofile=coverage.out ${{ inputs.package }}
-        echo "go test -coverprofile=coverage.out ${{ inputs.package }}"
 
     - name: Convert coverage.out to HTML
       run: |
@@ -50,11 +49,13 @@ runs:
         coverage_summary=$(go tool cover -func=coverage.out)
         echo "$coverage_summary"
         echo "::set-output name=coverage_text::$coverage_summary"
+      shell: bash
 
     - name: Set outputs
       id: coverage_outputs
       run: |
         echo "::set-output name=coverage_html::coverage.html"
+      shell: bash
 
     - name: Upload coverage report as artifact
       uses: actions/upload-artifact@v4
@@ -68,4 +69,5 @@ runs:
         echo "Coverage Summary:"
         echo "$coverage_summary" | awk 'BEGIN { print "Lines\tStatements\tBranches\tFunctions" } { print $1 "\t" $2 "\t" $3 "\t" $4 }'
         echo "::set-output name=coverage_text::$coverage_summary"
+      shell: bash
       
