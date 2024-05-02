@@ -1,7 +1,10 @@
 name: Go Code Coverage
-
 description: |
   This action runs code coverage for Go based projects and uploads the coverage report as an artifact.
+author: sonichigo
+branding:
+  icon: 'refresh-cw'
+  color: 'orange'
 
 inputs:
   package:
