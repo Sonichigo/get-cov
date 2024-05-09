@@ -53,7 +53,7 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
-  - name: Get coverage data and zip it
+    - name: Get coverage data as ZIP
       if: success()
       id: coverage-zip
       run: |
