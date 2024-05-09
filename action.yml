@@ -81,7 +81,7 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ github.token }}
         script: |
           const url = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/deployments/activity_log?environment=github-pages`;
           const issueNumber = context.issue.number;
