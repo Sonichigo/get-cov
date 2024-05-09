@@ -1,4 +1,4 @@
-name: Go Code Coverage
+name: Go Coverage Report
 description: |
   This action runs code coverage for Go based projects and uploads the coverage report as an artifact.
 author: sonichigo
@@ -24,10 +24,10 @@ runs:
   using: 'composite'
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@main
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@main
       with:
         go-version: 1.22.*
 
@@ -45,13 +45,14 @@ runs:
       shell: bash
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@main
       with:
         github_token: ${{ github.token }}
         publish_dir: .
 
     - name: Comment coverage report link
-      uses: actions/github-script@v3
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
       with:
         github-token: ${{ github.token }}
         script: |
