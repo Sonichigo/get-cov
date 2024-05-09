@@ -1,1 +1,1 @@
-# go-covreport
+# Go Code Coverage Report

@@ -7,20 +7,18 @@ branding:
   color: 'orange'
 
 inputs:
-  package:
-    description: 'Package path to run code coverage for.'
-    required: true
-    default: './'
-  coverage_threshold:
-    description: 'Minimum coverage percentage required.'
-    required: false
-    default: '80'
-
-outputs:
-  coverage_html:
-    description: 'Path to the generated HTML coverage report.'
-  coverage_text:
-    description: 'Text summary of coverage.'
+    package-directory:
+      description: 'Package directory to run tests'
+      required: false
+      default: './...'
+    coverage-file:
+      description: 'Name of the coverage file (without extension)'
+      required: false
+      default: 'coverage-report'
+    coverage-threshold:
+      description: 'Minimum coverage percentage required.'
+      required: false
+      default: '80'
 
 runs:
   using: 'composite'
@@ -31,47 +29,37 @@ runs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.x.x'
+        go-version: 1.22.*
 
-    - name: Install packages
-      run: | 
-        go mod download
-      shell: bash
-
-    - name: Run tests with coverage
+    - name: Generate coverage report
       run: |
-        go test -coverprofile=coverage.out ${{ inputs.package }}
+        PKG_DIR="${{ inputs.package-directory || './...' }}"
+        COVERAGE_FILE="${{ inputs.coverage-file || 'coverage-report' }}"
+        go test -race -coverprofile=$COVERAGE_FILE.out $PKG_DIR
+        go tool cover -html=$COVERAGE_FILE.out -o $COVERAGE_FILE.html
+        COVERAGE_PERCENTAGE=$(go tool cover -func=$COVERAGE_FILE.out | grep total: | awk '{print substr($3, 1, length($3)-1)}')
+        if (( $(echo "$COVERAGE_PERCENTAGE < ${{ inputs.coverage-threshold }}" | bc -l) )); then
+          echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
+          exit 1
+        fi
       shell: bash
 
-    - name: Convert coverage.out to HTML
-      run: |
-        go tool cover -html=coverage.out -o coverage.html
-      shell: bash
-
-    - name: Display coverage summary
-      run: |
-        coverage_summary=$(go tool cover -func=coverage.out)
-        echo "$coverage_summary"
-        echo "::set-output name=coverage_text::$coverage_summary"
-      shell: bash
-
-    - name: Set outputs
-      id: coverage_outputs
-      run: |
-        echo "::set-output name=coverage_html::coverage.html"
-      shell: bash
-
-    - name: Upload coverage report as artifact
-      uses: actions/upload-artifact@v4
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        name: coverage-report-${{ github.sha }}
-        path: coverage.html
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
 
-    - name: Display coverage summary
-      run: |
-        coverage_summary=$(go tool cover -func=coverage.out)
-        echo "Coverage Summary:"
-        echo "$coverage_summary" | awk 'BEGIN { print "Lines\tStatements\tBranches\tFunctions" } { print $1 "\t" $2 "\t" $3 "\t" $4 }'
-        echo "::set-output name=coverage_text::$coverage_summary"
-      shell: bash
+    - name: Comment coverage report link
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          let url = process.env.GITHUB_SERVER_URL + '/' + process.env.GITHUB_REPOSITORY + '/blob/' + process.env.GITHUB_HEAD_REF + '/${{ inputs.coverage-file || 'coverage-report' }}.html';
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `See the coverage report at: [${url}](${url})`
+          })
       
