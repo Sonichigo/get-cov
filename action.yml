@@ -23,6 +23,11 @@ inputs:
     description: 'Token with Deployment Permissions'
     required: true
 
+outputs:
+  coverage-report-file:
+    description: 'Path to the generated coverage report file'
+    value: ${{ steps.generate-report.outputs.report-file }}
+
 runs:
   using: 'composite'
   steps:
@@ -45,6 +50,7 @@ runs:
           echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
           exit 1
         fi
+        echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Create artifact directory
@@ -54,7 +60,7 @@ runs:
 
     - name: Copy coverage report to artifact directory
       run: |
-        cp $COVERAGE_FILE.html artifact/
+        cp ${{ steps.generate-report.outputs.report-file }} artifact/
       shell: bash
 
     - name: Upload coverage report artifact
