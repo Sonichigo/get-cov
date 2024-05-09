@@ -48,10 +48,12 @@ runs:
       shell: bash
 
     - name: Create artifact directory
-      run: mkdir artifact
+      run: |
+        mkdir artifact
 
     - name: Copy coverage report to artifact directory
-      run: cp $COVERAGE_FILE.html artifact/
+      run: |
+        cp $COVERAGE_FILE.html artifact/
 
     - name: Upload coverage report artifact
       uses: actions/upload-pages-artifact@v1
