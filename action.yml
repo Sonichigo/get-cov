@@ -60,7 +60,7 @@ runs:
 
     - name: Copy coverage report to artifact directory
       run: |
-        cp ${{ steps.generate-report.outputs.report-file }} artifact/
+        cp ${{ steps.generate-report.outputs.report-file }} artifact/${{ inputs.coverage-file }}.html
       shell: bash
 
     - name: Upload coverage report artifact
