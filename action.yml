@@ -22,6 +22,7 @@ inputs:
     token: 
       description: 'Token with Deployment Permissions'
       required: true
+      default: ${{ github.token }}
 
 
 runs:
@@ -51,7 +52,7 @@ runs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ inputs.github_token }}
+        github_token: ${{ inputs.token }}
         publish_dir: ./dist
         publish_branch: test-page
 
