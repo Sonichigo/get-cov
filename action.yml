@@ -22,8 +22,6 @@ inputs:
     token: 
       description: 'Token with Deployment Permissions'
       required: true
-      default: ${{ github.token }}
-
 
 runs:
   using: 'composite'
