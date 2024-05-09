@@ -51,7 +51,7 @@ runs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        deploy_key: ${{ inputs.token }}
+        github_token: ${{ inputs.github_token }}
         publish_dir: ./dist
         publish_branch: test-page
 
