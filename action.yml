@@ -53,26 +53,35 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Create artifact directory
+  - name: Get coverage data and zip it
+      if: success()
+      id: coverage-zip
       run: |
-        mkdir artifact
+        workdir="${{ inputs.package-directory }}"
+        workdir="${workdir//\\//-}"
+        workdir="${workdir%-}"
+        coverage="coverage-reports-${workdir}-${{ inputs.coverage-file }}"
+        mv ${{ inputs.coverage-file }}.html ./$coverage
+        echo "coverage=$coverage"
+        echo "::set-output name=coverage_name::$coverage"
+        zip -r ${coverage}.zip $coverage
       shell: bash
 
-    - name: Copy coverage report to artifact directory
-      run: |
-        cp ${{ steps.generate-report.outputs.report-file }} artifact/${{ inputs.coverage-file }}.html
-      shell: bash
-
-    - name: Upload coverage report artifact
-      uses: actions/upload-pages-artifact@v1
+    - name: Upload coverage zip as artifact
+      if: steps.coverage-zip.outputs.coverage_name != ''
+      uses: actions/upload-artifact@v4
       with:
-        path: artifact
+        name: ${{ inputs.coverage-file }}
+        path: ${{ steps.generate-report.outputs.report-file }}
+
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v3
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
       uses: actions/github-script@v6
       with:
-        github-token: ${{ inputs.token }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const url = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/deployments/activity_log?environment=github-pages`;
           const issueNumber = context.issue.number;
