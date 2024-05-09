@@ -19,6 +19,10 @@ inputs:
       description: 'Minimum coverage percentage required.'
       required: false
       default: '80'
+    token: 
+      description: 'Token with Deployment Permissions'
+      required: true
+
 
 runs:
   using: 'composite'
@@ -47,7 +51,7 @@ runs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ github.token }}
+        github_token: ${{ inputs.token }}
         publish_dir: ./dist
         publish_branch: test-page
 
