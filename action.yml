@@ -57,10 +57,10 @@ runs:
       if: success()
       id: coverage-zip
       run: |
-        workdir="${{ inputs.package-directory }}"
+        workdir=./
         workdir="${workdir//\\//-}"
         workdir="${workdir%-}"
-        coverage="coverage-reports-${workdir}-${{ inputs.coverage-file }}"
+        coverage="coverage-reports-${{ inputs.coverage-file }}"
         mv ${{ inputs.coverage-file }}.html ./$coverage
         echo "coverage=$coverage"
         echo "::set-output name=coverage_name::$coverage"
