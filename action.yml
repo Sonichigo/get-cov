@@ -47,8 +47,9 @@ runs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ github.token }}
         publish_dir: ./dist
+        publish_branch: test-page
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
