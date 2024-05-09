@@ -1,56 +1,13 @@
-name: Go Coverage Report
-description: |
-  This action runs code coverage for Go based projects, uploads the coverage report as an artifact, and comments on the pull request with the link to the deployed coverage report.
-author: sonichigo
-branding:
-  icon: 'refresh-cw'
-  color: 'orange'
+    - name: Create artifact directory
+      run: mkdir artifact
 
-inputs:
-  package-directory:
-    description: 'Package directory to run tests'
-    required: false
-    default: './...'
-  coverage-file:
-    description: 'Name of the coverage file (without extension)'
-    required: false
-    default: 'coverage-report'
-  coverage-threshold:
-    description: 'Minimum coverage percentage required.'
-    required: false
-    default: '80'
-  token:
-    description: 'Token with Deployment Permissions'
-    required: true
-
-runs:
-  using: 'composite'
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: 1.22.*
-
-    - name: Generate coverage report
-      run: |
-        PKG_DIR="${{ inputs.package-directory || './...' }}"
-        COVERAGE_FILE="${{ inputs.coverage-file || 'coverage-report' }}"
-        go test -race -coverprofile=$COVERAGE_FILE.out $PKG_DIR
-        go tool cover -html=$COVERAGE_FILE.out -o $COVERAGE_FILE.html
-        COVERAGE_PERCENTAGE=$(go tool cover -func=$COVERAGE_FILE.out | grep total: | awk '{print substr($3, 1, length($3)-1)}')
-        if (( $(echo "$COVERAGE_PERCENTAGE < ${{ inputs.coverage-threshold }}" | bc -l) )); then
-          echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
-          exit 1
-        fi
-      shell: bash
+    - name: Copy coverage report to artifact directory
+      run: cp ${{ inputs.coverage-file || 'coverage-report' }}.html artifact/
 
     - name: Upload coverage report artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        path: ${{ inputs.coverage-file || 'coverage-report' }}.html
+        path: artifact
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
