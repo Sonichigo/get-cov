@@ -45,10 +45,10 @@ runs:
       shell: bash
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@main
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ github.token }}
-        publish_dir: .
+        publish_dir: ./dist
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
