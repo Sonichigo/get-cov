@@ -32,7 +32,7 @@ permissions:
   contents: write  # Required for actions/upload-pages-artifact
   pages: write     # Required for actions/deploy-pages
   id-token: write  # Required for actions/deploy-pages
-  
+
 runs:
   using: 'composite'
   steps:
@@ -59,27 +59,33 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Get coverage data as ZIP
-      if: success()
-      id: coverage-zip
-      run: |
-        workdir=./
-        workdir="${workdir//\\//-}"
-        workdir="${workdir%-}"
-        coverage="coverage-reports-${{ inputs.coverage-file }}"
-        mv ${{ inputs.coverage-file }}.html ./$coverage
-        echo "coverage=$coverage"
-        echo "::set-output name=coverage_name::$coverage"
-        zip -r ${coverage}.zip $coverage
-      shell: bash
+    # - name: Get coverage data as ZIP
+    #   if: success()
+    #   id: coverage-zip
+    #   run: |
+    #     workdir=./
+    #     workdir="${workdir//\\//-}"
+    #     workdir="${workdir%-}"
+    #     coverage="coverage-reports-${{ inputs.coverage-file }}"
+    #     mv ${{ inputs.coverage-file }}.html ./$coverage
+    #     echo "coverage=$coverage"
+    #     echo "::set-output name=coverage_name::$coverage"
+    #     zip -r ${coverage}.zip $coverage
+    #   shell: bash
 
     - name: Upload coverage report artifact
+      permissions:
+        pages: write      # to deploy to Pages
+        id-token: write   # to verify the deployment originates from an appropriate source
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
+      permissions:
+        pages: write      # to deploy to Pages
+        id-token: write   # to verify the deployment originates from an appropriate source
       uses: actions/deploy-pages@v3
 
     - name: Comment coverage report link
