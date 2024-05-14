@@ -79,10 +79,6 @@ runs:
       env: 
         name: github-pages
         token: ${{ inputs.token }}
-        permissions:
-          contents: write  # Required for actions/upload-pages-artifact
-          pages: write     # Required for actions/deploy-pages
-          id-token: write  # Required for actions/deploy-pages
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
