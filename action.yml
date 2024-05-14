@@ -28,10 +28,6 @@ outputs:
     description: 'Path to the generated coverage report file'
     value: ${{ steps.generate-report.outputs.report-file }}
 
-permissions:
-  contents: write  # Required for actions/upload-pages-artifact
-  pages: write     # Required for actions/deploy-pages
-  id-token: write  # Required for actions/deploy-pages
 runs:
   using: 'composite'
   steps:
@@ -78,12 +74,15 @@ runs:
         name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
 
-    # - name: Deploy to GitHub Pages
-    #   uses: actions/deploy-pages@v3
-    #   env: 
-    #     name: github-pages
-    #   with:
-    #     token: ${{ inputs.token }}
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v3
+      env: 
+        name: github-pages
+        token: ${{ inputs.token }}
+        permissions:
+          contents: write  # Required for actions/upload-pages-artifact
+          pages: write     # Required for actions/deploy-pages
+          id-token: write  # Required for actions/deploy-pages
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
