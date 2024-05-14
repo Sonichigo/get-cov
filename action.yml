@@ -81,7 +81,7 @@ runs:
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v3
       with:
-        github-token: ${{ inputs.token }}
+        token: ${{ inputs.token }}
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
