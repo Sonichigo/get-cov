@@ -78,12 +78,16 @@ runs:
         name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
 
-    - name: Deploy to GitHub Pages
-      uses: actions/deploy-pages@v3
-      with:
-        token: ${{ inputs.token }}
+    # - name: Deploy to GitHub Pages
+    #   uses: actions/deploy-pages@v3
+    #   env: 
+    #     name: github-pages
+    #     url: ${{ steps.deployment.outputs.page_url }}
+    #   with:
+    #     token: ${{ inputs.token }}
 
     - name: Comment coverage report link
+      id:
       if: ${{ github.event_name == 'pull_request' }}
       uses: actions/github-script@v6
       with:
