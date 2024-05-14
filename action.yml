@@ -87,7 +87,6 @@ runs:
     #     token: ${{ inputs.token }}
 
     - name: Comment coverage report link
-      id:
       if: ${{ github.event_name == 'pull_request' }}
       uses: actions/github-script@v6
       with:
