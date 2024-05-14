@@ -82,7 +82,6 @@ runs:
     #   uses: actions/deploy-pages@v3
     #   env: 
     #     name: github-pages
-    #     url: ${{ steps.deployment.outputs.page_url }}
     #   with:
     #     token: ${{ inputs.token }}
 
@@ -97,9 +96,9 @@ runs:
           const repo = context.repo.repo;
           const owner = context.repo.owner;
 
-          github.issues.createComment({
+          github.rest.issues.createComment({
             issue_number: issueNumber,
-            owner,
-            repo,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
             body: `See the coverage report at: [Deployment Log](${url})`
           });
