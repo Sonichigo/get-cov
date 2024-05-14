@@ -28,6 +28,11 @@ outputs:
     description: 'Path to the generated coverage report file'
     value: ${{ steps.generate-report.outputs.report-file }}
 
+permissions:
+  contents: write  # Required for actions/upload-pages-artifact
+  pages: write     # Required for actions/deploy-pages
+  id-token: write  # Required for actions/deploy-pages
+  
 runs:
   using: 'composite'
   steps:
@@ -68,11 +73,10 @@ runs:
         zip -r ${coverage}.zip $coverage
       shell: bash
 
-    - name: Upload coverage zip as artifact
-      if: steps.coverage-zip.outputs.coverage_name != ''
+    - name: Upload coverage report artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.coverage-file }}
+        name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
