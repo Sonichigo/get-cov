@@ -32,7 +32,6 @@ permissions:
   contents: write  # Required for actions/upload-pages-artifact
   pages: write     # Required for actions/deploy-pages
   id-token: write  # Required for actions/deploy-pages
-
 runs:
   using: 'composite'
   steps:
@@ -74,19 +73,15 @@ runs:
     #   shell: bash
 
     - name: Upload coverage report artifact
-      permissions:
-        pages: write      # to deploy to Pages
-        id-token: write   # to verify the deployment originates from an appropriate source
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
-      permissions:
-        pages: write      # to deploy to Pages
-        id-token: write   # to verify the deployment originates from an appropriate source
       uses: actions/deploy-pages@v3
+      with:
+        github-token: ${{ inputs.token }}
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
