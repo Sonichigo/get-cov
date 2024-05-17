@@ -55,31 +55,20 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Get coverage data and zip it
-      if: success()
-      id: coverage-zip  # Unique ID for the step
-      run: |
-        coverage="coverage_reports"
-        zip -r ${{ steps.generate-report.outputs.report-file }}.zip
-        echo "::set-output name=coverage_name::coverage_reports"
-      shell: bash
-
     - name: Upload coverage report artifact
-      if: steps.coverage-zip.outputs.coverage_name != ''
       uses: actions/upload-artifact@v4
       with:
-        name: coverage_reports
-        path: ${{ steps.coverage-zip.outputs.coverage_name }}.zip
+        name: ${{ inputs.coverage-file || 'coverage-report' }}
+        path: ${{ steps.generate-report.outputs.report-file }}.zip
 
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v3
       with: 
-        artifact_name: coverage_reports
+        artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
       env: 
         token: ${{ github.token }}
         name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
@@ -87,7 +76,6 @@ runs:
       with:
         github-token: ${{ github.token }}
         script: |
-          const url = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/deployments/activity_log?environment=github-pages`;
           const issueNumber = context.issue.number;
           const repo = context.repo.repo;
           const owner = context.repo.owner;
@@ -96,5 +84,5 @@ runs:
             issue_number: issueNumber,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `See the coverage report at: [Deployment Log](${url})`
+            body: `See the coverage report at: [Deployment Log](${{ steps.deployment.outputs.page_url }})`
           });
