@@ -63,7 +63,7 @@ runs:
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v3.9
+      uses: actions/deploy-pages@v3
       with: 
         artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
       env: 
