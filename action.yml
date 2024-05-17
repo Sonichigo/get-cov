@@ -55,17 +55,26 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
+      if: success()
+      id: coverage-zip  # Unique ID for the step
+      run: |
+        coverage="coverage_reports"
+        zip -r ${{ steps.generate-report.outputs.report-file }}.zip
+        echo "::set-output name=coverage_name::coverage_reports"
+      shell: bash
+
     - name: Upload coverage report artifact
+      if: steps.coverage-zip.outputs.coverage_name != ''
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.coverage-file || 'coverage-report' }}
-        path: ${{ steps.generate-report.outputs.report-file }}
+        name: coverage_reports
+        path: ${{ steps.coverage-zip.outputs.coverage_name }}.zip
 
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v3
       with: 
-        artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
+        artifact_name: coverage_reports
       env: 
         token: ${{ github.token }}
         name: github-pages
