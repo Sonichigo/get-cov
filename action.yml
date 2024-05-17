@@ -64,8 +64,9 @@ runs:
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v3
       env: 
-        name: coverage-report
+        artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
         token: ${{ github.token }}
+        name: ${{ inputs.coverage-file || 'coverage-report' }}
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
