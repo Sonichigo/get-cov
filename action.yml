@@ -63,12 +63,12 @@ runs:
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v3
+      uses: actions/deploy-pages@v3.9
       with: 
         artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
       env: 
         token: ${{ github.token }}
-        name: ${{ inputs.coverage-file || 'coverage-report' }}
+        name: github-pages
         url: ${{ steps.deployment.outputs.page_url }}
 
     - name: Comment coverage report link
