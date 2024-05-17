@@ -55,6 +55,7 @@ runs:
         echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
       shell: bash
 
+    - name: Get coverage data and zip it
       if: success()
       id: coverage-zip  # Unique ID for the step
       run: |
