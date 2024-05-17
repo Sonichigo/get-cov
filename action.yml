@@ -58,13 +58,13 @@ runs:
     - name: Upload coverage report artifact
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: ${{ inputs.coverage-file || 'coverage-report' }}
         path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v3
       env: 
-        name: github-pages
+        name: coverage-report
         token: ${{ github.token }}
 
     - name: Comment coverage report link
