@@ -56,6 +56,7 @@ runs:
       shell: bash
 
     - name: Upload coverage report artifact
+      id: deployment
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.coverage-file || 'coverage-report' }}
@@ -67,6 +68,7 @@ runs:
         artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
         token: ${{ github.token }}
         name: ${{ inputs.coverage-file || 'coverage-report' }}
+        url: ${{ steps.deployment.outputs.page_url }}
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
