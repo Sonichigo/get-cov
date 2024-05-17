@@ -59,7 +59,9 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.coverage-file || 'coverage-report' }}
-        path: ${{ steps.generate-report.outputs.report-file }}.zip
+        path: ${{ steps.generate-report.outputs.report-file }}
+        overwrite: true
+        retention-days: 4
 
     - name: Deploy to GitHub Pages
       id: deployment
