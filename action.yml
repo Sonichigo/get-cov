@@ -59,7 +59,7 @@ runs:
       id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.coverage-file || 'coverage-report' }}
+        name: coverage-report
         path: ${{ steps.generate-report.outputs.report-file }}
         overwrite: true
         retention-days: 4
@@ -68,7 +68,7 @@ runs:
       id: deployment
       uses: actions/deploy-pages@v3
       with: 
-        artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
+        artifact_name: coverage-report
         token: ${{ github.token }}
 
     - name: Comment coverage report link
