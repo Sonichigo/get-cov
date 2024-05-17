@@ -56,16 +56,17 @@ runs:
       shell: bash
 
     - name: Upload coverage report artifact
-      id: deployment
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.coverage-file || 'coverage-report' }}
         path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
+      id: deployment
       uses: actions/deploy-pages@v3
-      env: 
+      with: 
         artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
+      env: 
         token: ${{ github.token }}
         name: ${{ inputs.coverage-file || 'coverage-report' }}
         url: ${{ steps.deployment.outputs.page_url }}
