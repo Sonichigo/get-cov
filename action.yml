@@ -70,7 +70,6 @@ runs:
       with: 
         artifact_name: ${{ inputs.coverage-file || 'coverage-report' }}
         token: ${{ github.token }}
-        name: github-pages
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
