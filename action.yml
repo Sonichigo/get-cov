@@ -28,6 +28,9 @@ outputs:
   coverage-report-file:
     description: 'Path to the generated coverage report file'
     value: ${{ steps.generate-report.outputs.report-file }}
+  url:
+    description: 'URL of deployed pages'
+    value: ${{ steps.deployment.outputs.page_url }}
 
 runs:
   using: 'composite'
@@ -59,7 +62,7 @@ runs:
       id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: github-pages
         path: ${{ steps.generate-report.outputs.report-file }}
         overwrite: true
         retention-days: 4
@@ -67,6 +70,9 @@ runs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+      env:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
       with: 
         artifact_name: coverage-report
         token: ${{ github.token }}
