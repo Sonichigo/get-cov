@@ -74,7 +74,7 @@ runs:
         name: github-pages
         url: ${{ steps.deployment.outputs.page_url }}
       with: 
-        artifact_name: coverage-report
+        artifact_name: github-pages
         token: ${{ github.token }}
 
     - name: Comment coverage report link
