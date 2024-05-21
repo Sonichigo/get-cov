@@ -76,6 +76,7 @@ runs:
       with: 
         artifact_name: github-pages
         token: ${{ github.token }}
+        preview: true
 
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
