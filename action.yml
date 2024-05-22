@@ -69,6 +69,7 @@ runs:
 
     - name: Deploy to GitHub Pages
       id: deployment
+      if: ${{ github.event_name == 'pull_request' }}
       uses: actions/deploy-pages@v4
       env:
         name: github-pages
