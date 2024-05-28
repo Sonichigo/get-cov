@@ -59,7 +59,7 @@ runs:
         echo "$COVERAGE_FILE.html"
         mv $COVERAGE_FILE.html _site/$COVERAGE_FILE.html
         echo "report-file=_site/"  >> $GITHUB_OUTPUT
-        zip -r report-file.zip report-file
+        zip -r report-file.zip . -i report-file
       shell: bash
 
     - name: Upload coverage report artifact
