@@ -55,7 +55,11 @@ runs:
           echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
           exit 1
         fi
-        echo "report-file=$COVERAGE_FILE.html" >> $GITHUB_OUTPUT
+        mkdir _site/
+        echo "$COVERAGE_FILE.html"
+        mv $COVERAGE_FILE.html _site/$COVERAGE_FILE.html
+        echo "report-file=_site/"  >> $GITHUB_OUTPUT
+        zip -r report-file.zip report-file
       shell: bash
 
     - name: Upload coverage report artifact
@@ -63,7 +67,6 @@ runs:
       uses: actions/upload-pages-artifact@main
       with:
         name: github-pages
-        path: ${{ steps.generate-report.outputs.report-file }}
 
     - name: Deploy to GitHub Pages
       id: deployment
