@@ -60,7 +60,7 @@ runs:
 
     - name: Upload coverage report artifact
       id: upload-artifact
-      uses: upload-pages-artifact
+      uses: actions/upload-pages-artifact@main
       with:
         name: github-pages
         path: ${{ steps.generate-report.outputs.report-file }}
