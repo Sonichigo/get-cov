@@ -94,5 +94,5 @@ runs:
             issue_number: issueNumber,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `See the coverage report at: [Deployment Log](${{ steps.deployment.outputs.page_url }})`
+            body: `See the coverage report at: [Deployment Log](${{ steps.deployment.outputs.page_url }}/test-file.html)`
           });
