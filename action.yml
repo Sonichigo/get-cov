@@ -67,7 +67,7 @@ runs:
         COVERAGE_FILE="${{ inputs.coverage-file || 'coverage-report' }}"
         go test -race -coverprofile=$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.out $PKG_DIR
         go tool cover -html=$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.out -o $COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.html
-        COVERAGE_PERCENTAGE=$(go tool cover -func=$COVERAGE_FILE.out | grep total: | awk '{print substr($3, 1, length($3)-1)}')
+        COVERAGE_PERCENTAGE=$(go tool cover -func=$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.out | grep total: | awk '{print substr($3, 1, length($3)-1)}')
         if (( $(echo "$COVERAGE_PERCENTAGE < ${{ inputs.coverage-threshold }}" | bc -l) )); then
           echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
           exit 1
