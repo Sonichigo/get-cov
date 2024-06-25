@@ -49,6 +49,7 @@ runs:
     
     - name: Output Run ID
       run: echo ${{ github.run_id }}
+      shell: bash
   
     - name: Generate a unique id
       id: gen-id
