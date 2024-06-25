@@ -61,6 +61,10 @@ runs:
         echo "report-file=_site/"  >> $GITHUB_OUTPUT
         zip -r report-file.zip . -i report-file
       shell: bash
+    
+    - uses: geekyeggo/delete-artifact@v5
+      with:
+          name: github-pages
 
     - name: Upload coverage report artifact
       id: upload-artifact
@@ -94,5 +98,5 @@ runs:
             issue_number: issueNumber,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `See the coverage report at: [Deployment Log](${{ steps.deployment.outputs.page_url }}/test-file.html)`
+            body: `See the coverage report at: [Deployment Log](${{steps.deployment.outputs.page_url}}index.html)`
           });
