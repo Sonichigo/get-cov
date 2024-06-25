@@ -46,22 +46,32 @@ runs:
       uses: actions/setup-go@v4
       with:
         go-version: 1.22.*
-
+    
+    - name: Output Run ID
+      run: echo ${{ github.run_id }}
+  
+    - name: Generate a unique id
+      id: gen-id
+      if: always()
+      run: |
+        echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
+      shell: bash
+      
     - name: Generate coverage report
       id: generate-report
       run: |
         PKG_DIR="${{ inputs.package-directory || './...' }}"
         COVERAGE_FILE="${{ inputs.coverage-file || 'coverage-report' }}"
-        go test -race -coverprofile=$COVERAGE_FILE.out $PKG_DIR
-        go tool cover -html=$COVERAGE_FILE.out -o $COVERAGE_FILE.html
+        go test -race -coverprofile=$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.out $PKG_DIR
+        go tool cover -html=$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.out -o $COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.html
         COVERAGE_PERCENTAGE=$(go tool cover -func=$COVERAGE_FILE.out | grep total: | awk '{print substr($3, 1, length($3)-1)}')
         if (( $(echo "$COVERAGE_PERCENTAGE < ${{ inputs.coverage-threshold }}" | bc -l) )); then
           echo "Error: Coverage $COVERAGE_PERCENTAGE% is below the required threshold of ${{ inputs.coverage-threshold }}%"
           exit 1
         fi
         mkdir _site/
-        echo "$COVERAGE_FILE.html"
-        mv $COVERAGE_FILE.html _site/$COVERAGE_FILE.html
+        echo "$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.html"
+        mv $COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.html _site/$COVERAGE_FILE-${{steps.gen-id.outputs.rand}}.html
         echo "report-file=_site/"  >> $GITHUB_OUTPUT
         zip -r report-file.zip . -i report-file
       shell: bash
@@ -83,13 +93,6 @@ runs:
         artifact_name: github-pages
         token: ${{ github.token }}
         preview: true
-    
-    - name: Generate a unique id
-      id: gen-id
-      if: always()
-      run: |
-        echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
-      shell: bash
       
     - name: Comment coverage report link
       if: ${{ github.event_name == 'pull_request' }}
