@@ -37,6 +37,10 @@ runs:
   steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      
+    - uses: geekyeggo/delete-artifact@v5
+      with:
+          name: github-pages
 
     - name: Set up Go
       uses: actions/setup-go@v4
@@ -61,10 +65,6 @@ runs:
         echo "report-file=_site/"  >> $GITHUB_OUTPUT
         zip -r report-file.zip . -i report-file
       shell: bash
-    
-    - uses: geekyeggo/delete-artifact@v5
-      with:
-          name: github-pages
 
     - name: Upload coverage report artifact
       id: upload-artifact
@@ -94,9 +94,22 @@ runs:
           const repo = context.repo.repo;
           const owner = context.repo.owner;
 
+          PREVIOUS_JOB_ID=$(jq -r '.id' <<< "$WORKFLOW_RUN_EVENT_OBJ")
+          echo "Previous Job ID: $PREVIOUS_JOB_ID"
+          echo "PREVIOUS_JOB_ID=$PREVIOUS_JOB_ID" >> "$GITHUB_ENV"
+          
+          ARTIFACT_ID=$(gh api "/repos/$OWNER/$REPO/actions/artifacts" \
+            --jq ".artifacts.[] |
+            select(.workflow_run.id==${PREVIOUS_JOB_ID}) |
+            select(.expired==false) |
+            .id")
+
+          echo "Artifact ID: $ARTIFACT_ID"
+          echo "ARTIFACT_ID=$ARTIFACT_ID" >> "$GITHUB_ENV"
+          
           github.rest.issues.createComment({
             issue_number: issueNumber,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `See the coverage report at: [Deployment Log](${{steps.deployment.outputs.page_url}}index.html)`
+            body: `See the coverage report at: [Deployment Log](${{steps.deployment.outputs.page_url}}test-file-${{ARTIFACT_ID}}.html)`
           });
