@@ -93,23 +93,10 @@ runs:
           const issueNumber = context.issue.number;
           const repo = context.repo.repo;
           const owner = context.repo.owner;
-
-          PREVIOUS_JOB_ID=$(jq -r '.id' <<< "$WORKFLOW_RUN_EVENT_OBJ")
-          echo "Previous Job ID: $PREVIOUS_JOB_ID"
-          echo "PREVIOUS_JOB_ID=$PREVIOUS_JOB_ID" >> "$GITHUB_ENV"
-          
-          ARTIFACT_ID=$(gh api "/repos/$OWNER/$REPO/actions/artifacts" \
-            --jq ".artifacts.[] |
-            select(.workflow_run.id==${PREVIOUS_JOB_ID}) |
-            select(.expired==false) |
-            .id")
-
-          echo "Artifact ID: $ARTIFACT_ID"
-          echo "ARTIFACT_ID=$ARTIFACT_ID" >> "$GITHUB_ENV"
           
           github.rest.issues.createComment({
             issue_number: issueNumber,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `See the coverage report at: [Deployment Log](${{steps.deployment.outputs.page_url}}test-file-${{ARTIFACT_ID}}.html)`
+            body: `See the coverage report at: [Deployment Log](${{steps.deployment.outputs.page_url}}test-file-${{artifact_id}}.html)`
           });
