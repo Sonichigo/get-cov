@@ -48,14 +48,16 @@ runs:
         go-version: 1.22.*
     
     - name: Output Run ID
-      run: echo ${{ github.run_id }}
+      run: |
+        echo ${{ github.run_id }}
+        echo ${{ github.run_attempt }}
       shell: bash
   
     - name: Generate a unique id
       id: gen-id
       if: always()
       run: |
-        echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
+        echo "rand=${{ github.run_id }}_${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
       shell: bash
       
     - name: Generate coverage report
