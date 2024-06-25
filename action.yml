@@ -83,12 +83,12 @@ runs:
         artifact_name: github-pages
         token: ${{ github.token }}
         preview: true
-        
+    
     - name: Generate a unique id
-        id: gen-id
-        if: always()
-        run: |
-          echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
+      id: gen-id
+      if: always()
+      run: |
+        echo "rand=$(openssl rand -hex 3)" >> "$GITHUB_OUTPUT"
       shell: bash
       
     - name: Comment coverage report link
